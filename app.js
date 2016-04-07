@@ -16,11 +16,11 @@ io.on('connection', socket => {
   io.emit('initChat', chatCache);
 
   socket.on('draw', data => {
-    io.emit('draw', data);
+    socket.broadcast.emit('draw', data);
   });
 
   socket.on('clear', () => {
-    io.emit('clear');
+    socket.broadcast.emit('clear');
   });
 
   socket.on('cache', dataURL => {

@@ -11,6 +11,17 @@
   var isDrawing = false;
   var rect = board.getBoundingClientRect();
 
+  var drawing = function (data) {
+    ctx.beginPath();
+    ctx.moveTo(data.from.x, data.from.y);
+    ctx.lineTo(data.to.x, data.to.y);
+    ctx.stroke();
+  };
+
+  var erasing = function () {
+    ctx.clearRect(0, 0, board.width, board.height);
+  };
+
   var sendCache = function () {
     var dataURL = board.toDataURL();
     socket.emit('cache', dataURL);
@@ -46,7 +57,7 @@
     x = evt.clientX - rect.left;
     y = evt.clientY - rect.top;
 
-    socket.emit('draw', {
+    var data = {
       from: {
         x: startX,
         y: startY
@@ -55,7 +66,10 @@
         x: x,
         y: y
       }
-    });
+    };
+
+    drawing(data);
+    socket.emit('draw', data);
 
     startX = x;
     startY = y;
@@ -67,19 +81,17 @@
   });
 
   socket.on('draw', function (data) {
-    ctx.beginPath();
-    ctx.moveTo(data.from.x, data.from.y);
-    ctx.lineTo(data.to.x, data.to.y);
-    ctx.stroke();
+    drawing(data);
     sendCache();
   });
 
   clear.addEventListener('click', function () {
+    erasing();
     socket.emit('clear');
   });
 
   socket.on('clear', function () {
-    ctx.clearRect(0, 0, board.width, board.height);
+    erasing();
     sendCache();
   });
 
