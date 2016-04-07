@@ -18,12 +18,12 @@ let boardCache = null;
 boardIO.on('connection', socket => {
   boardIO.emit('init', boardCache);
 
-  socket.on('draw', points => {
-    socket.broadcast.emit('draw', points);
+  socket.on('draw', (tool, points) => {
+    socket.broadcast.emit('draw', tool, points);
   });
 
-  socket.on('clear', () => {
-    socket.broadcast.emit('clear');
+  socket.on('clear all', () => {
+    socket.broadcast.emit('clear all');
   });
 
   socket.on('save cache', dataURL => {
