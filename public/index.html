@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>drawing chat</title>
+    <style>
+      body {
+        background-color: #ccc;
+      }
+      #board {
+        background-color: #fefefe;
+        cursor: crosshair;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="board" width="500" height="500"></canvas>
+    <button id="clear">clear</button>
+    <hr>
+
+    <form id="chat">
+      <input id="message" type="text" placeholder="message">
+      <button type="submit">send</button>
+    </form>
+    <ul id="chat-list"></ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      window.socket = io();
+    </script>
+    <script src="/js/board.js"></script>
+    <script src="/js/chat.js"></script>
+  </body>
+</html>
