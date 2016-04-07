@@ -27,14 +27,21 @@
     socket.emit('cache', dataURL);
   };
 
+  var hideLoading = function () {
+    var loading = document.getElementById('loading');
+    loading.parentNode.removeChild(loading);
+  };
+
   socket.once('initBoard', function (dataURL) {
     if (!dataURL) {
+      hideLoading();
       return;
     }
 
     var image = new Image();
     image.addEventListener('load', function () {
       ctx.drawImage(image, 0, 0);
+      hideLoading();
     });
     image.src = dataURL;
   });
