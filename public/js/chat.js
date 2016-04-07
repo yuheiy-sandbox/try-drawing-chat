@@ -1,33 +1,41 @@
 (function () {
   'use strict';
 
-  var chat = document.getElementById('chat');
-  var message = document.getElementById('message');
-  var chatList = document.getElementById('chat-list');
+  var socket = io('/chat');
+  var form = document.getElementById('chat-form');
+  var messageField = document.getElementById('chat-message-field');
+  var list = document.getElementById('chat-list');
 
-  socket.once('initChat', function (messages) {
+  var createMessageElement = function (message) {
+    var item = document.createElement('li');
+    var text = message.text;
+    var date = moment(message.date).format('h:mm');
+
+    item.textContent = date + ' ' + text;
+    return item;
+  };
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    socket.emit('new message', messageField.value);
+    messageField.value = '';
+  });
+
+  socket.once('init', function (messages) {
     var frag = document.createDocumentFragment();
 
     messages.map(function (message) {
-      var item = document.createElement('li');
-      item.textContent = message;
+      var item = createMessageElement(message);
       return item;
-    }).forEach(function (el) {
-      frag.insertBefore(el, frag.firstChild);
+    }).forEach(function (item) {
+      frag.insertBefore(item, frag.firstChild);
     });
 
-    chatList.appendChild(frag);
+    list.appendChild(frag);
   });
 
-  chat.addEventListener('submit', function (evt) {
-    evt.preventDefault();
-    socket.emit('chat', message.value);
-    message.value = '';
-  });
-
-  socket.on('chat', function (message) {
-    var item = document.createElement('li');
-    item.textContent = message;
-    chatList.insertBefore(item, chatList.firstChild);
+  socket.on('new message', function (message) {
+    var item = createMessageElement(message);
+    list.insertBefore(item, list.firstChild);
   });
 })();

@@ -1,35 +1,50 @@
 'use strict';
 const path = require('path');
-const http = require('http');
 const express = require('express');
-const socketIO = require('socket.io');
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
-let boardCache = null;
-const chatCache = [];
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const port = process.env.PORT || 3000;
+
+server.listen(port, () => {
+  console.log('Server litening at port ' + port);
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-io.on('connection', socket => {
-  io.emit('initBoard', boardCache);
-  io.emit('initChat', chatCache);
+const boardIO = io.of('/board');
+let boardCache = null;
 
-  socket.on('draw', data => {
-    socket.broadcast.emit('draw', data);
+boardIO.on('connection', socket => {
+  boardIO.emit('init', boardCache);
+
+  socket.on('draw', points => {
+    socket.broadcast.emit('draw', points);
   });
 
   socket.on('clear', () => {
     socket.broadcast.emit('clear');
   });
 
-  socket.on('cache', dataURL => {
+  socket.on('save cache', dataURL => {
     boardCache = dataURL;
   });
+});
 
-  socket.on('chat', message => {
+const chatIO = io.of('/chat');
+const chatCache = [];
+
+chatIO.on('connection', socket => {
+  chatIO.emit('init', chatCache);
+
+  socket.on('new message', text => {
+    const message = {
+      text: text,
+      date: Date.now()
+    };
+
     chatCache.push(message);
-    io.emit('chat', message);
+    chatIO.emit('new message', message);
   });
 });
 
