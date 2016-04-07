@@ -40,11 +40,13 @@
       case 'pencil':
         ctx.globalCompositeOperation = 'source-over';
         ctx.lineWidth = 1;
+        ctx.lineCap = 'butt';
         break;
 
       case 'eraser':
         ctx.globalCompositeOperation = 'destination-out';
         ctx.lineWidth = 20;
+        ctx.lineCap = 'square';
         break;
     }
 
