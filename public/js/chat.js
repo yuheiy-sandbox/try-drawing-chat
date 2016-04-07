@@ -36,6 +36,7 @@
     });
 
     list.appendChild(frag);
+    messageField.focus();
   });
 
   socket.on('new message', function (message) {
