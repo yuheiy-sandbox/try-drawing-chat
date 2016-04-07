@@ -17,17 +17,21 @@
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    socket.emit('new message', messageField.value);
+    var text = messageField.value.trim();
+
+    if (!text) {
+      return;
+    }
+
+    socket.emit('new message', text);
     messageField.value = '';
   });
 
   socket.once('init', function (messages) {
     var frag = document.createDocumentFragment();
 
-    messages.map(function (message) {
+    messages.forEach(function (message) {
       var item = createMessageElement(message);
-      return item;
-    }).forEach(function (item) {
       frag.insertBefore(item, frag.firstChild);
     });
 
